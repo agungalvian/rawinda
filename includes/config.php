@@ -23,4 +23,55 @@ define('BASE_URL', 'http://localhost/rawinda_pratama');
 
 // Path for file uploads
 define('UPLOAD_PATH', dirname(__DIR__) . '/assets/uploads/');
+
+// Authentication Functions
+if (!function_exists('isLoggedIn')) {
+    function isLoggedIn() {
+        return isset($_SESSION['user_id']);
+    }
+}
+
+if (!function_exists('isAdmin')) {
+    function isAdmin() {
+        return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    }
+}
+
+if (!function_exists('isWarga')) {
+    function isWarga() {
+        return isset($_SESSION['role']) && $_SESSION['role'] === 'warga';
+    }
+}
+
+if (!function_exists('requireLogin')) {
+    function requireLogin() {
+        if (!isLoggedIn()) {
+            $_SESSION['error'] = 'Silakan login terlebih dahulu!';
+            header('Location: ../index.php');
+            exit();
+        }
+    }
+}
+
+if (!function_exists('requireAdmin')) {
+    function requireAdmin() {
+        requireLogin();
+        if (!isAdmin()) {
+            $_SESSION['error'] = 'Akses ditolak! Halaman ini hanya untuk admin.';
+            header('Location: ../warga/dashboard.php');
+            exit();
+        }
+    }
+}
+
+if (!function_exists('requireWarga')) {
+    function requireWarga() {
+        requireLogin();
+        if (!isWarga()) {
+            $_SESSION['error'] = 'Akses ditolak! Halaman ini hanya untuk warga.';
+            header('Location: ../admin/dashboard.php');
+            exit();
+        }
+    }
+}
 ?>
